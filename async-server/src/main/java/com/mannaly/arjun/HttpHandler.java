@@ -7,24 +7,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
-import io.netty.util.concurrent.EventExecutorGroup;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import java.util.List;
 import java.util.Map;
 
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-
-
-//    private final EventExecutorGroup executor;
-//
-//    public HttpHandler(EventExecutorGroup executor) {
-//        //System.out.println("Creating HttpHandler");
-//        this.executor = executor;
-//    }
-
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
@@ -35,8 +23,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if(queryText != null && !queryText.get(0).isEmpty()) {
 
             String text = queryText.get(0);
-            FilePatternSearcher searcher = new FilePatternSearcher(text);
-            List<String> matchingLines = searcher.call();
+            List<String> matchingLines = FilePatternSearcher.search(text);
             StringBuilder builder = new StringBuilder();
             for (String s : matchingLines) {
                 builder.append(s);
@@ -50,29 +37,6 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html; charset=UTF-8");
             response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
             ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-
-
-
-//            final Future<List<String>> f = executor.submit(searcher);
-//
-//            f.addListener(new GenericFutureListener<Future<List<String>>>() {
-//                @Override
-//                public void operationComplete(Future<List<String>> matchingLines) throws Exception {
-//                    StringBuilder builder = new StringBuilder();
-//                    for (String s : matchingLines.get()) {
-//                        builder.append(s);
-//                        builder.append("<br>");
-//                    }
-//                    ByteBuf responseText = Unpooled.copiedBuffer(builder.toString(), CharsetUtil.UTF_8);
-//                    DefaultFullHttpResponse response = new DefaultFullHttpResponse(
-//                            HttpVersion.HTTP_1_1,
-//                            HttpResponseStatus.OK,
-//                            responseText);
-//                    response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html; charset=UTF-8");
-//                    response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-//                    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-//                }
-//            });
         }
         else {
             ByteBuf responseText = Unpooled.copiedBuffer("<h4>got request</h4>", CharsetUtil.UTF_8);

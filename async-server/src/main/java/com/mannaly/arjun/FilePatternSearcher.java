@@ -5,21 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
-public class FilePatternSearcher implements Callable<List<String>> {
-
-    private final String query;
-
-    public FilePatternSearcher(String query) {
-        this.query = query;
-    }
-
-    @Override
-    public List<String> call() throws Exception {
-        return search(query);
-    }
+public class FilePatternSearcher {
 
     public static List<String> search(String query) throws IOException {
         long start = System.currentTimeMillis();
@@ -38,14 +26,13 @@ public class FilePatternSearcher implements Callable<List<String>> {
                     matchedLines.add("<b>" + lineCount++ + ": </b>" + line);
                 }
             }
-
         }
         finally {
              if(reader != null)
                  reader.close();
         }
         long end = System.currentTimeMillis();
-        //System.out.println(end-start);
+        System.out.println(end-start);
         return matchedLines;
     }
 }
