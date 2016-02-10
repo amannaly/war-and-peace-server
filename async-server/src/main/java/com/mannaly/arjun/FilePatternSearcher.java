@@ -22,6 +22,7 @@ public class FilePatternSearcher implements Callable<List<String>> {
     }
 
     public static List<String> search(String query) throws IOException {
+        long start = System.currentTimeMillis();
         BufferedReader reader = null;
         List<String> matchedLines;
 
@@ -43,6 +44,8 @@ public class FilePatternSearcher implements Callable<List<String>> {
              if(reader != null)
                  reader.close();
         }
+        long end = System.currentTimeMillis();
+        //System.out.println(end-start);
         return matchedLines;
     }
 }

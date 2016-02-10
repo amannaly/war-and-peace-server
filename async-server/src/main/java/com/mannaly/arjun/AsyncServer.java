@@ -13,7 +13,7 @@ public class AsyncServer {
 
     public void run() throws Exception {
         EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup();
+        EventLoopGroup worker = new NioEventLoopGroup(4);
 
         try {
             System.out.println("Starting async server ....");
