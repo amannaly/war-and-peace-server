@@ -8,7 +8,10 @@ repositories {
 }
 
 dependencies {
+    compile project(':common')
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
 mainClassName = 'com.mannaly.arjun.SyncServer'
+applicationDefaultJvmArgs = ["-Xms2048m"]
+applicationDefaultJvmArgs = ["-Xmx2048m"]

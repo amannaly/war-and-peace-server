@@ -33,7 +33,7 @@ public class RequestHandler implements Runnable {
                     query = getQuery(line);
                     if (query != null) {
                         //System.out.println("got query string -> " + query);
-                        matchedLines = search(query);
+                        matchedLines = FilePatternSearcher.search(query);
                     }
                     isFirst = false;
                 }
@@ -86,20 +86,5 @@ public class RequestHandler implements Runnable {
         }
         else
             return null;
-    }
-
-    private List<String> search(String query) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("file.txt"));
-        List<String> matchedLines = new ArrayList<>();
-        String line;
-        int lineCount = 1;
-        Pattern pattern = Pattern.compile(".*" + query + ".*", Pattern.CASE_INSENSITIVE);
-
-        while ((line = reader.readLine()) != null) {
-            if (pattern.matcher(line).matches()) {
-                matchedLines.add("<b>" + lineCount++ + ": </b>" + line);
-            }
-        }
-        return matchedLines;
     }
 }

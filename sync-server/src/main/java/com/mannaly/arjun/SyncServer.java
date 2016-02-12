@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Server {
+public class SyncServer {
 
     public static void startServer() throws IOException {
         ClientConnectionListener listener = new ClientConnectionListener(8888);
