@@ -13,5 +13,4 @@ dependencies {
 }
 
 mainClassName = 'com.mannaly.arjun.SyncServer'
-applicationDefaultJvmArgs = ["-Xms2048m"]
-applicationDefaultJvmArgs = ["-Xmx2048m"]
+applicationDefaultJvmArgs = ["-Xms8192m", "-Xmx8192m", "-XX:MaxNewSize=4096m","-XX:+PrintGCDetails", "-Xloggc:/Users/amannaly/code/java-server/gc.log"]

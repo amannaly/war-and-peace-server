@@ -17,7 +17,7 @@ public class ServerInitializer extends ChannelInboundHandlerAdapter {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ChannelInitializer.class);
 
-    private final EventExecutorGroup executor = new DefaultEventExecutorGroup(5);
+    private final EventExecutorGroup executor = new DefaultEventExecutorGroup(50);
 
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipe = ch.pipeline();

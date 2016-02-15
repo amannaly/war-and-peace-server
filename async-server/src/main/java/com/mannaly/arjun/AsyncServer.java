@@ -13,7 +13,7 @@ public class AsyncServer {
 
     public void run() throws Exception {
         EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup(4);
+        EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
             System.out.println("Starting async server ....");
@@ -23,8 +23,8 @@ public class AsyncServer {
             b.group(boss, worker)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ServerInitializer())
-                    .option(ChannelOption.SO_BACKLOG, 500)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    .option(ChannelOption.SO_BACKLOG, 5000)
+                    .childOption(ChannelOption.SO_KEEPALIVE, false);
 
             ChannelFuture f = b.bind(8888).sync();
             f.channel().closeFuture().sync();

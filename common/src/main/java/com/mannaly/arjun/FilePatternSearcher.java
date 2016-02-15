@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FilePatternSearcher {
@@ -15,15 +16,16 @@ public class FilePatternSearcher {
         List<String> matchedLines;
 
         try {
-            reader = new BufferedReader(new FileReader("/Users/amannaly/code/java-server/file.txt"));
+            reader = new BufferedReader(new FileReader("/Users/amannaly/code/java-server/file1.txt"));
             matchedLines = new ArrayList<>();
             String line;
-            int lineCount = 1;
             Pattern pattern = Pattern.compile(".*" + query + ".*", Pattern.CASE_INSENSITIVE);
+            Matcher m = pattern.matcher("");
 
             while ((line = reader.readLine()) != null) {
-                if (pattern.matcher(line).matches()) {
-                    matchedLines.add("<b>" + lineCount++ + ": </b>" + line);
+                m.reset(line);
+                if (m.matches()) {
+                    matchedLines.add(line);
                 }
             }
         }
@@ -31,6 +33,7 @@ public class FilePatternSearcher {
              if(reader != null)
                  reader.close();
         }
+
         long end = System.currentTimeMillis();
         System.out.println(end-start);
         return matchedLines;

@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class ClientConnectionListener {
 
-    ThreadPoolExecutor threadPool = (ThreadPoolExecutor)Executors.newFixedThreadPool(500);
+    ThreadPoolExecutor threadPool = (ThreadPoolExecutor)Executors.newFixedThreadPool(1000);
     private int connectionCount = 0;
 
     private final ServerSocket socket;
@@ -30,7 +30,7 @@ public class ClientConnectionListener {
                 clientSocket.setKeepAlive(false);
                 clientSocket.setSoTimeout(5000);
                 threadPool.submit(new RequestHandler(clientSocket));
-                System.out.printf("queue size - %d. pool size - %d. active count - %d \n", threadPool.getQueue().size(), threadPool.getLargestPoolSize(), threadPool.getActiveCount());
+                //System.out.printf("queue size - %d. pool size - %d. active count - %d \n", threadPool.getQueue().size(), threadPool.getPoolSize(), threadPool.getActiveCount());
                 //System.out.println(threadPool.);
             } catch (Throwable e) {
                 e.printStackTrace();
