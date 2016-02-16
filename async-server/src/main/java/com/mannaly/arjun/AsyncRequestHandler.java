@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 
-public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
@@ -20,45 +20,38 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         Map<String, List<String>> params = query.parameters();
         List<String> queryText = params.get("q");
 
+        String responseText;
         if(queryText != null && !queryText.get(0).isEmpty()) {
-
             String text = queryText.get(0);
             List<String> matchingLines = FilePatternSearcher.search(text);
+
             StringBuilder builder = new StringBuilder();
             for (String s : matchingLines) {
                 builder.append(s);
                 builder.append("<br>");
             }
-            ByteBuf responseText = Unpooled.copiedBuffer(builder.toString(), CharsetUtil.UTF_8);
-            DefaultFullHttpResponse response = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.OK,
-                    responseText);
-            response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html; charset=UTF-8");
-            response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+
+            responseText = builder.toString();
         }
         else {
-            ByteBuf responseText = Unpooled.copiedBuffer("<h4>got request</h4>", CharsetUtil.UTF_8);
-            DefaultFullHttpResponse response = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.OK,
-                    responseText);
-            response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html; charset=UTF-8");
-            response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);;
+            responseText = "<h4>No query param.</h4>";
         }
 
+        ByteBuf buf = Unpooled.copiedBuffer(responseText, CharsetUtil.UTF_8);
+        DefaultFullHttpResponse response = new DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1,
+                HttpResponseStatus.OK,
+                buf);
+
+        response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html; charset=UTF-8");
+        response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("ERROR ERROR");
+        System.out.println("ERROR");
         cause.printStackTrace();
         ctx.close();
     }
-
-
-
-
 }
