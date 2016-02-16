@@ -7,35 +7,30 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RequestHandler implements Runnable {
+public class SyncRequestHandler implements Runnable {
 
     private Socket clientSocket;
 
     private static final Pattern pattern = Pattern.compile("GET /\\?q=(.*) HTTP/1.1");
 
-    public RequestHandler(Socket clientSocket) {
+    public SyncRequestHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
 
     @Override
     public void run() {
-        BufferedReader reader = null;
+        BufferedReader reader;
         PrintWriter writer = null;
 
         try {
             reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String line, query;
-            boolean isFirst = true;
             List<String> matchedLines = new ArrayList<>(0);
 
-            while ((line =reader.readLine()) != null && !line.equals("")) {
-                if(isFirst) {
-                    query = getQuery(line);
-                    if (query != null) {
-                        //System.out.println("got query string -> " + query);
-                        matchedLines = FilePatternSearcher.search(query);
-                    }
-                    isFirst = false;
+            if ((line = reader.readLine()) != null && !line.equals("")) {
+                query = getQuery(line);
+                if (query != null) {
+                    matchedLines = FilePatternSearcher.search(query);
                 }
             }
 
@@ -58,7 +53,6 @@ public class RequestHandler implements Runnable {
                 }
                 writer.println(builder.toString());
             }
-
             writer.flush();
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,10 +63,6 @@ public class RequestHandler implements Runnable {
             try {
                 if (clientSocket != null)
                     clientSocket.close();
-//                if (reader != null)
-//                    reader.close();
-//                if (writer != null)
-//                    writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
