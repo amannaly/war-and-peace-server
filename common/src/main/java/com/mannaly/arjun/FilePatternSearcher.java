@@ -13,15 +13,14 @@ public class FilePatternSearcher {
     public static List<String> search(String query) throws IOException {
         long start = System.currentTimeMillis();
         BufferedReader reader = null;
-        List<String> matchedLines;
+        List<String> matchedLines = new ArrayList<>();
 
         try {
-            reader = new BufferedReader(new FileReader("/Users/amannaly/code/java-server/file1.txt"));
-            matchedLines = new ArrayList<>();
+            reader = new BufferedReader(new FileReader("/Users/amannaly/code/java-server/war-and-peace.txt"));
             String line;
             Pattern pattern = Pattern.compile(".*" + query + ".*", Pattern.CASE_INSENSITIVE);
-            Matcher m = pattern.matcher("");
 
+            Matcher m = pattern.matcher("");
             while ((line = reader.readLine()) != null) {
                 m.reset(line);
                 if (m.matches()) {
@@ -35,7 +34,7 @@ public class FilePatternSearcher {
         }
 
         long end = System.currentTimeMillis();
-        System.out.println(end-start);
+        //System.out.println(end-start);
         return matchedLines;
     }
 }
