@@ -1,8 +1,7 @@
 package com.mannaly.arjun;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,7 +15,8 @@ public class FilePatternSearcher {
         List<String> matchedLines = new ArrayList<>();
 
         try {
-            reader = new BufferedReader(new FileReader("/Users/amannaly/code/java-server/war-and-peace.txt"));
+            InputStream resourceAsStream = FilePatternSearcher.class.getClassLoader().getResourceAsStream("war-and-peace.txt");
+            reader = new BufferedReader(new InputStreamReader(resourceAsStream));
             String line;
             Pattern pattern = Pattern.compile(".*" + query + ".*", Pattern.CASE_INSENSITIVE);
 
@@ -29,12 +29,12 @@ public class FilePatternSearcher {
             }
         }
         finally {
-             if(reader != null)
-                 reader.close();
+            if(reader != null)
+                reader.close();
         }
 
         long end = System.currentTimeMillis();
-        //System.out.println(end-start);
+        System.out.println(end-start);
         return matchedLines;
     }
 }

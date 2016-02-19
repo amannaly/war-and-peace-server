@@ -14,4 +14,4 @@ dependencies {
 }
 
 mainClassName = 'com.mannaly.arjun.AsyncServer'
-applicationDefaultJvmArgs = ["-Xms8192m", "-Xmx8192m", "-XX:MaxNewSize=4096m","-XX:+PrintGCDetails", "-Xloggc:/Users/amannaly/code/java-server/gc.log"]
+applicationDefaultJvmArgs = ["-Xms8192m", "-Xmx8192m"]
