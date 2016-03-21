@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="false" >
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %date: [%level]: [%thread] %logger %message%n%xException
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_APP"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>/home/amannaly/application.log</File>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                /var/log/api.audience/application.%d{yyyy-MM-dd}.log
+            </FileNamePattern>
+            <maxHistory>168</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder>
+            <Pattern>
+                %date: [%level]: [%thread] %logger %message%n%xException
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="FILE_APP"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
