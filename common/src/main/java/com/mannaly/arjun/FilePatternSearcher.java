@@ -57,7 +57,7 @@ public class FilePatternSearcher {
         }
 
         long end = System.currentTimeMillis();
-        logger.debug("Searched file contents in {} ms.", end - start);
+        //logger.debug("Searched file contents in {} ms.", end - start);
         return matchedLines;
     }
 }

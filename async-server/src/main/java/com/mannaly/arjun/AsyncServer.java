@@ -4,6 +4,9 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -14,18 +17,20 @@ public class AsyncServer {
     public void run() throws Exception {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 
-        EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup();
+        OsType osType = OsType.getOsType();
+
+        EventLoopGroup boss = getBossGroup(osType);
+        EventLoopGroup worker = getWorkerGroup(osType);
 
         try {
             System.out.println("Starting async server ....");
 
             ServerBootstrap b = new ServerBootstrap();
             b.group(boss, worker)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(getChannelType(osType))
                     .childHandler(new ServerInitializer())
                     .option(ChannelOption.SO_BACKLOG, 5000)
-                    .childOption(ChannelOption.SO_KEEPALIVE, false);
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(8888).sync();
             f.channel().closeFuture().sync();
@@ -34,6 +39,27 @@ public class AsyncServer {
         finally {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
+        }
+    }
+
+    private EventLoopGroup getBossGroup(OsType osType) {
+        switch (osType) {
+            case LINUX: return new EpollEventLoopGroup();
+            default:    return new NioEventLoopGroup();
+        }
+    }
+
+    private EventLoopGroup getWorkerGroup(OsType osType) {
+        switch (osType) {
+            case LINUX: return new EpollEventLoopGroup(100);
+            default:    return new NioEventLoopGroup();
+        }
+    }
+
+    private Class<? extends ServerChannel> getChannelType(OsType osType) {
+        switch (osType) {
+            case LINUX: return EpollServerSocketChannel.class;
+            default:    return NioServerSocketChannel.class;
         }
     }
 
