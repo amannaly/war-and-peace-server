@@ -10,7 +10,7 @@ public enum OsType {
         if (osName.contains("mac")) {
             osType = OsType.OSX;
         }
-        else if (osName.contains("nix")) {
+        else if (osName.contains("nix") || osName.contains("nux")) {
             osType = OsType.LINUX;
         }
         else if (osName.contains("win")) {

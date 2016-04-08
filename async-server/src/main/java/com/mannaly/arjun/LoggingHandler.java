@@ -98,7 +98,7 @@ public class LoggingHandler extends ChannelDuplexHandler {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         //logger.info(format(ctx, "RECEIVED"));
         long time = System.currentTimeMillis() - registerStartTime;
-        //logger.info("received in {} ms", time);
+        logger.info("received in {} ms", time);
         startTime = System.currentTimeMillis();
         ctx.fireChannelRead(msg);
     }

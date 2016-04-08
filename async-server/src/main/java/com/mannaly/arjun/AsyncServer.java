@@ -29,8 +29,8 @@ public class AsyncServer {
             b.group(boss, worker)
                     .channel(getChannelType(osType))
                     .childHandler(new ServerInitializer())
-                    .option(ChannelOption.SO_BACKLOG, 5000)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    .option(ChannelOption.SO_BACKLOG, 20000)
+                    .childOption(ChannelOption.SO_KEEPALIVE, false);
 
             ChannelFuture f = b.bind(8888).sync();
             f.channel().closeFuture().sync();
@@ -51,7 +51,7 @@ public class AsyncServer {
 
     private EventLoopGroup getWorkerGroup(OsType osType) {
         switch (osType) {
-            case LINUX: return new EpollEventLoopGroup(100);
+            case LINUX: return new EpollEventLoopGroup();
             default:    return new NioEventLoopGroup();
         }
     }
