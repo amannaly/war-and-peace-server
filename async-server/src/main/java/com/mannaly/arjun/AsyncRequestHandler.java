@@ -22,8 +22,8 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
 
         String responseText;
         if(queryText != null && !queryText.get(0).isEmpty()) {
-            String text = queryText.get(0);
-            List<String> matchingLines = FilePatternSearcher.search(text);
+            String text = queryText.get(0).toLowerCase();
+            List<String> matchingLines = InvertedIndex.INSTANCE.find(text);
 
             StringBuilder builder = new StringBuilder();
             for (String s : matchingLines) {
