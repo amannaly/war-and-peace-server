@@ -1,0 +1,8 @@
+rootProject.name = 'java-server'
+
+include 'sync-server'
+
+include 'async-server'
+
+include 'common'
+
