@@ -18,7 +18,7 @@
         <rollingPolicy
                 class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                /var/log/api.audience/application.%d{yyyy-MM-dd}.log
+                /home/amannaly/application.%d{yyyy-MM-dd}.log
             </FileNamePattern>
             <maxHistory>168</maxHistory>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
