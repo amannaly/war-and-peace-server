@@ -1,4 +1,4 @@
-rootProject.name = 'java-server'
+rootProject.name = 'war-and-peace-server'
 
 include 'sync-server'
 
