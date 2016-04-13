@@ -49,7 +49,7 @@ public enum InvertedIndex {
                 lineCount++;
             }
             long end = System.currentTimeMillis();
-            logger.debug("Read file from disk in {} ms", end-start);
+            logger.debug("Build index in {} ms", end-start);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -67,9 +67,7 @@ public enum InvertedIndex {
         List<String> lines = new ArrayList<>();
 
         if (indexes != null) {
-            for (int i : indexes) {
-                lines.add(fileLines.get(i));
-            }
+            indexes.forEach(i -> lines.add(fileLines.get(i)));
         }
         return lines;
     }
