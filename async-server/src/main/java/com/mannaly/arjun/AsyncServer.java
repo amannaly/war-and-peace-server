@@ -9,14 +9,10 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
 public class AsyncServer {
 
     public void run() throws Exception {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-
         OsType osType = OsType.getOsType();
 
         EventLoopGroup boss = getBossGroup(osType);
@@ -30,7 +26,7 @@ public class AsyncServer {
                     .channel(getChannelType(osType))
                     .childHandler(new ServerInitializer())
                     .option(ChannelOption.SO_BACKLOG, 20000)
-                    .childOption(ChannelOption.SO_KEEPALIVE, false);
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(8888).sync();
             f.channel().closeFuture().sync();

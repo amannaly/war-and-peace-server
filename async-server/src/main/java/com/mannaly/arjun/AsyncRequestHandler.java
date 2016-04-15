@@ -10,7 +10,7 @@ import io.netty.util.CharsetUtil;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
@@ -26,11 +26,10 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
             List<String> matchingLines = InvertedIndex.INSTANCE.find(text);
 
             StringBuilder builder = new StringBuilder();
-            for (String s : matchingLines) {
+            matchingLines.forEach(s -> {
                 builder.append(s);
                 builder.append("<br>");
-            }
-
+            });
             responseText = builder.toString();
         }
         else {
@@ -43,9 +42,9 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
                 HttpResponseStatus.OK,
                 buf);
 
-        response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html; charset=UTF-8");
+        response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        ctx.writeAndFlush(response);
     }
 
     @Override
