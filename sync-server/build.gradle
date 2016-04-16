@@ -7,6 +7,8 @@ repositories {
     mavenCentral()
 }
 
+// netty will be a transitive dependency as it will be added as part of common.
+//TODO: remove it here.
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.16'
     compile 'com.hynnet:logback-classic:1.1.3'

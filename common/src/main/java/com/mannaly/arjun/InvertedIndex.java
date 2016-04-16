@@ -1,5 +1,8 @@
 package com.mannaly.arjun;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +23,9 @@ public enum InvertedIndex {
 
     private final static Logger logger = LoggerFactory.getLogger(FilePatternSearcher.class);
 
-    private final List<String> fileLines = new ArrayList<>();
+    private final List<ByteBuf> fileLines = new ArrayList<>();
+
+    //TODO: try GNU trove for better performance.
     private final Map<String, List<Integer>> index = new HashMap<>();
     Pattern pattern = Pattern.compile("\\w+");
 
@@ -34,10 +39,16 @@ public enum InvertedIndex {
             reader = new BufferedReader(new InputStreamReader(resourceAsStream));
             String line;
             int lineCount = 0;
+            ByteBuf lineBuf;
             while ((line = reader.readLine()) != null) {
-                fileLines.add(line);
-                List<String> tokens = tokenize(line);
+                lineBuf = Unpooled.copiedBuffer(line, CharsetUtil.UTF_8);
 
+                // Since we write the buffer directly to the wire it will be released
+                // causing an io.netty.util.IllegalReferenceCountException when accessed a second time.
+                // To prevent this we use unreleasableBuffer.
+                fileLines.add(Unpooled.unreleasableBuffer(lineBuf));
+
+                List<String> tokens = tokenize(line);
                 for (String t : tokens) {
                     List<Integer> indexes = index.get(t);
                     if (indexes == null) {
@@ -62,9 +73,9 @@ public enum InvertedIndex {
         }
     }
 
-    public List<String> find(String word) {
+    public List<ByteBuf> find(String word) {
         List<Integer> indexes = index.get(word);
-        List<String> lines = new ArrayList<>();
+        List<ByteBuf> lines = new ArrayList<>();
 
         if (indexes != null) {
             indexes.forEach(i -> lines.add(fileLines.get(i)));
