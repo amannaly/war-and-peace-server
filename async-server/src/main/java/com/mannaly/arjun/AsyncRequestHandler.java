@@ -28,11 +28,12 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
         Map<String, List<String>> params = query.parameters();
         List<String> queryText = params.get("q");
 
-        final CompositeByteBuf result = Unpooled.compositeBuffer();
+        final CompositeByteBuf result;
         if(queryText != null && !queryText.get(0).isEmpty()) {
             String text = queryText.get(0).toLowerCase();
             List<ByteBuf> matchingLines = InvertedIndex.INSTANCE.find(text);
 
+            result = Unpooled.compositeBuffer(2 * matchingLines.size());
             matchingLines.forEach(s -> {
                 result.addComponent(s);
                 result.addComponent(lineBreak);
@@ -42,6 +43,7 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
             });
         }
         else {
+            result = Unpooled.compositeBuffer();
             result.addComponent(noResult);
             result.writerIndex(noResultSize);
         }
