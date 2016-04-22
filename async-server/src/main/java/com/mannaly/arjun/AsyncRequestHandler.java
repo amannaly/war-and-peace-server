@@ -1,7 +1,6 @@
 package com.mannaly.arjun;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,40 +11,28 @@ import io.netty.util.CharsetUtil;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private static final ByteBuf lineBreak = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("<br>", CharsetUtil.UTF_8));
-    private static final ByteBuf noResult = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("<h4>No query param.</h4>", CharsetUtil.UTF_8));
-
-    private static final int lineBreakSize = lineBreak.readableBytes();
-    private static final int noResultSize = noResult.readableBytes();
-
+    @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+
         QueryStringDecoder query = new QueryStringDecoder(msg.getUri());
         Map<String, List<String>> params = query.parameters();
         List<String> queryText = params.get("q");
 
-        final CompositeByteBuf result;
+        String responseText;
+        ByteBuf result;
+
         if(queryText != null && !queryText.get(0).isEmpty()) {
             String text = queryText.get(0).toLowerCase();
-            List<ByteBuf> matchingLines = InvertedIndex.INSTANCE.find(text);
 
-            result = Unpooled.compositeBuffer(2 * matchingLines.size());
-            matchingLines.forEach(s -> {
-                result.addComponent(s);
-                result.addComponent(lineBreak);
-
-                // writerIndex in CompositeBuffer is not incremented by addComponent.
-                result.writerIndex(result.writerIndex() + s.readableBytes() + lineBreakSize);
-            });
+            result = InvertedIndex.INSTANCE.find(text);
         }
         else {
-            result = Unpooled.compositeBuffer();
-            result.addComponent(noResult);
-            result.writerIndex(noResultSize);
+            responseText = "<h4>No query param.</h4>";
+            result = Unpooled.copiedBuffer(responseText, CharsetUtil.UTF_8);
         }
 
         DefaultFullHttpResponse response = new DefaultFullHttpResponse(
@@ -55,6 +42,7 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
 
         response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(CONTENT_ENCODING, "deflate");
         ctx.writeAndFlush(response);
     }
 
