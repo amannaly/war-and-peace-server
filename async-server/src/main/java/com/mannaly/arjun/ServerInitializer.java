@@ -22,7 +22,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeLine.addLast("decoder", new HttpRequestDecoder());
         pipeLine.addLast("aggregator", new HttpObjectAggregator(1024));
         pipeLine.addLast("encoder", new HttpResponseEncoder());
-        pipeLine.addLast("compressor", new HttpContentCompressor());
+        //pipeLine.addLast("compressor", new HttpContentCompressor());
         pipeLine.addLast("handler", new AsyncRequestHandler());
     }
 

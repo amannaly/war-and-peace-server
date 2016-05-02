@@ -29,7 +29,7 @@ public enum InvertedIndex {
     private final Map<String, List<Integer>> wordToContainingLinesMap = new HashMap<>();
     private final Pattern pattern = Pattern.compile("\\w+");
 
-    private final Deflater deflater = new Deflater(9, true);
+    private final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, true);
 
     // slowest compression but best compression.
     // http://stackoverflow.com/questions/9050260/what-does-a-zlib-header-look-like
