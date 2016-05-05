@@ -23,7 +23,7 @@ public enum InvertedIndex {
 
     INSTANCE;
 
-    private final static Logger logger = LoggerFactory.getLogger(FilePatternSearcher.class);
+    private final static Logger logger = LoggerFactory.getLogger(InvertedIndex.class);
 
     private final List<DeflateCompressedContainer> compressedLines = new ArrayList<>();
     private final Map<String, List<Integer>> wordToContainingLinesMap = new HashMap<>();
@@ -68,7 +68,7 @@ public enum InvertedIndex {
         logger.info("Building inverted index...");
         long start = System.currentTimeMillis();
 
-        InputStream resourceAsStream = FilePatternSearcher.class.getClassLoader().getResourceAsStream("war-and-peace.txt");
+        InputStream resourceAsStream = InvertedIndex.class.getClassLoader().getResourceAsStream("war-and-peace.txt");
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(resourceAsStream));
@@ -79,7 +79,7 @@ public enum InvertedIndex {
             while ((line = reader.readLine()) != null) {
                 compressedLines.add(compressString(line));
 
-                List<String> tokens = tokenize(line);
+                List<String> tokens = StringUtils.tokenize(line);
                 for (String t : tokens) {
                     List<Integer> indexes = wordToContainingLinesMap.get(t);
                     if (indexes == null) {
@@ -152,7 +152,7 @@ public enum InvertedIndex {
 
     private DeflateCompressedContainer compressString(String line) {
         byte[] input = line.getBytes(Charset.forName("UTF-8"));
-        byte[] out = new byte[getUpperBoundForZlibOutput(input.length)];
+        byte[] out = new byte[ZlibUtils.getUpperBoundForZlibOutput(input.length)];
 
         deflater.setInput(input);
 
@@ -165,14 +165,6 @@ public enum InvertedIndex {
         crc32.update(input, 0, input.length);
         return new DeflateCompressedContainer(out, input.length, bytesWritten, computeAdler32(input));
     }
-
-    private int getUpperBoundForZlibOutput(int inputLength) {
-        // ripped out straight from zlib source code.
-        // https://github.com/madler/zlib/blob/50893291621658f355bc5b4d450a8d06a563053d/deflate.c#L566
-        // we use raw deflate without any wrapper which gives this number.
-        return inputLength + ((inputLength + 7) >> 3) + ((inputLength + 63) >> 6) + 5;
-    }
-
 
     // adler32 checksum in big-endian.
     // https://tools.ietf.org/html/rfc1950#page-4
@@ -187,16 +179,6 @@ public enum InvertedIndex {
         Adler32 crc32 = new Adler32();
         crc32.update(input, 0, input.length);
         return crc32.getValue();
-    }
-
-    private List<String> tokenize(String line) {
-        Matcher matcher = pattern.matcher(line);
-
-        List<String> words = new ArrayList<>();
-        while (matcher.find()) {
-            words.add(matcher.group().toLowerCase());
-        }
-        return words;
     }
 
     private class DeflateCompressedContainer {

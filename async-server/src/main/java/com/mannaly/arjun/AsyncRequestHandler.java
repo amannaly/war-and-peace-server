@@ -28,7 +28,7 @@ public class AsyncRequestHandler extends SimpleChannelInboundHandler<FullHttpReq
         if(queryText != null && !queryText.get(0).isEmpty()) {
             String text = queryText.get(0).toLowerCase();
 
-            result = InvertedIndex.INSTANCE.find(text);
+            result = InvertedIndexV2.INSTANCE.find(text);
         }
         else {
             responseText = "<h4>No query param.</h4>";

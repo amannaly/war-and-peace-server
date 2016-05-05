@@ -60,7 +60,7 @@ public class AsyncServer {
     }
 
     public static void main(String[] args) throws Exception {
-        InvertedIndex.INSTANCE.buildCache();
+        InvertedIndexV2.INSTANCE.buildCache();
         AsyncServer server = new AsyncServer();
         server.run();
     }
