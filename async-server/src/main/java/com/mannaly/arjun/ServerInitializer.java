@@ -4,28 +4,28 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.EventExecutorGroup;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
     //private final EventExecutorGroup executor = new DefaultEventExecutorGroup(100);
 
+    private final LoadTestSessionHandler sessionHandler = new LoadTestSessionHandler();
+    private final AsyncRequestHandler asyncRequestHandler = new AsyncRequestHandler();
+    private final ResponseTimeHandler responseTimeHandler = new ResponseTimeHandler();
+
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeLine = ch.pipeline();
 
-        //pipeLine.addLast("logging", new LoggingHandler());
+        pipeLine.addLast("response time", responseTimeHandler);
         pipeLine.addLast("decoder", new HttpRequestDecoder());
         pipeLine.addLast("aggregator", new HttpObjectAggregator(1024));
         pipeLine.addLast("encoder", new HttpResponseEncoder());
-        //pipeLine.addLast("compressor", new HttpContentCompressor());
-        pipeLine.addLast("handler", new AsyncRequestHandler());
+        pipeLine.addLast("load testing session", sessionHandler);
+        pipeLine.addLast("async handler", asyncRequestHandler);
     }
-
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

@@ -3,22 +3,20 @@ package com.mannaly.arjun;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.net.SocketAddress;
 
 public class LoggingHandler extends ChannelDuplexHandler {
 
-    private final static Logger logger = LoggerFactory.getLogger(LoggingHandler.class);
+    private final static Logger logger  = LoggerFactory.getLogger(LoggingHandler.class);
 
-    private long registerStartTime = 0;
     private long startTime = 0;
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx)
             throws Exception {
-        registerStartTime = System.currentTimeMillis();
         //logger.info(format(ctx, "REGISTERED"));
         super.channelRegistered(ctx);
     }
@@ -97,16 +95,25 @@ public class LoggingHandler extends ChannelDuplexHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         //logger.info(format(ctx, "RECEIVED"));
-        long time = System.currentTimeMillis() - registerStartTime;
-        logger.info("received in {} ms", time);
         startTime = System.currentTimeMillis();
         ctx.fireChannelRead(msg);
     }
 
     @Override
+    public void read(ChannelHandlerContext ctx) throws Exception {
+        //logger.info(format(ctx, "READ"));
+        super.read(ctx);
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        //logger.info(format(ctx, "CHANNEL_READ_COMPLETE"));
+        super.channelReadComplete(ctx);
+    }
+
+    @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         //logger.info(format(ctx, "WRITE"));
-
         ctx.write(msg, promise);
     }
 

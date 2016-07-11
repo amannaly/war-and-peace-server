@@ -13,9 +13,8 @@ dependencies {
 }
 
 mainClassName = 'com.mannaly.arjun.AsyncServer'
-applicationDefaultJvmArgs = ["-Xms8192m", "-Xmx8192m"]
-
+applicationDefaultJvmArgs = ["-Xms4096m", "-Xmx4096m"]
 
 
 // for yourkit profiling.
-//applicationDefaultJvmArgs = ["-Xms8192m", "-Xmx8192m", "-agentpath:/home/amannaly/yjp-2016.02/bin/linux-x86-64/libyjpagent.so"]
+//applicationDefaultJvmArgs = ["-Xms4096m", "-Xmx4096m", "-agentpath:/home/ubuntu/yjp-2016.02/bin/linux-x86-64/libyjpagent.so"]
