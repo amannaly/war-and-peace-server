@@ -26,7 +26,6 @@ public class LoadTestSessionHandler extends SimpleChannelInboundHandler<FullHttp
                 break;
             case "/end_session":
                 ResponseTimeHandler.endSession();
-                ResponseTimeHandler.startSession();
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
                 break;
             default:
