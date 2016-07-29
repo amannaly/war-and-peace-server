@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 
 import com.jcraft.jzlib.JZlib;
-import com.jcraft.jzlib.CRC32;
 
 public enum InvertedIndex {
 
@@ -157,12 +156,9 @@ public enum InvertedIndex {
         deflater.setInput(input);
 
         // we deflate with SYNC_FLUSH as we have to combine many of these raw deflate block together
-        //TODO: don't think SYNC_FLUSH is useful here as we are doing a reset right after. Behavior is similar to FULL_FLUSH
         int bytesWritten = deflater.deflate(out, 0, out.length, Deflater.SYNC_FLUSH);
         deflater.reset();
 
-        CRC32 crc32 = new CRC32();
-        crc32.update(input, 0, input.length);
         return new DeflateCompressedContainer(out, input.length, bytesWritten, computeAdler32(input));
     }
 
