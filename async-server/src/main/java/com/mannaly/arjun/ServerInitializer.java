@@ -15,6 +15,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
     private final LoadTestSessionHandler sessionHandler = new LoadTestSessionHandler();
     private final AsyncRequestHandler asyncRequestHandler = new AsyncRequestHandler();
     private final ResponseTimeHandler responseTimeHandler = new ResponseTimeHandler();
+    private final EchoHandler echoHandler = new EchoHandler();
 
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeLine = ch.pipeline();
@@ -23,6 +24,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeLine.addLast("decoder", new HttpRequestDecoder());
         pipeLine.addLast("aggregator", new HttpObjectAggregator(1024));
         pipeLine.addLast("encoder", new HttpResponseEncoder());
+        pipeLine.addLast("echo endpoint", echoHandler);
         pipeLine.addLast("load testing session", sessionHandler);
         pipeLine.addLast("async handler", asyncRequestHandler);
     }
